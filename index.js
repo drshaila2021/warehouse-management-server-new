@@ -28,7 +28,6 @@ async function run() {
       const query = {};
       const cursor = furnitureColection.find(query);
       const items = await cursor.toArray();
-      console.log(items);
       res.send(items);
     });
     // get single item
@@ -36,6 +35,34 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await furnitureColection.findOne(query);
+      res.send(result);
+    });
+    // post new item
+    app.post("/inventory", async (req, res) => {
+      const newItem = req.body;
+      const result = await await furnitureColection.insertOne(newItem);
+      res.send(result);
+    });
+
+    // update data
+    app.put("/inventory/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedQuantity = req.body;
+      const filter = { _id: ObjectId(id) };
+      console.log(updatedQuantity);
+      const updatedDoc = {
+        $set: {
+          quantity: updatedQuantity.quantity,
+          // about: updatedService.about,
+        },
+      };
+
+      const options = { upsert: true };
+      const result = await furnitureColection.updateOne(
+        filter,
+        updatedDoc,
+        options
+      );
       res.send(result);
     });
     // item delete
